@@ -37,3 +37,24 @@ class LessonContent(models.Model):
     def __str__(self):
         return f"{self.lesson.title} - Content {self.order}"
 
+class Activity(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
+    
+class Question(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    text = models.TextField()
+
+    def __str__(self):
+        return self.text
+    
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text

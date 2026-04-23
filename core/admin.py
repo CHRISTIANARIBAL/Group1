@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Lesson, Progress, LessonContent
+from .models import *
 
 admin.site.register(Course)
 
@@ -13,4 +13,7 @@ class LessonAdmin(admin.ModelAdmin):
     inlines = [LessonContentInline]
 
 admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Activity)
+admin.site.register(Question)
+admin.site.register(Choice)
 

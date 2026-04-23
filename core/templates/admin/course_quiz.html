@@ -1,0 +1,23 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-xl font-bold text-primary mb-6">
+    {{ course.title }} - Quiz
+</h1>
+
+{% if quiz %}
+    <p class="mb-4">Quiz: {{ quiz.title }}</p>
+
+<a href="{% url 'admin_quiz_builder' course.id %}"
+   class="bg-primary px-4 py-2 rounded">
+   ✏️ Edit Quiz
+</a>
+
+{% else %}
+    <a href="{% url 'admin_quiz_builder' course.id %}">
+        ➕ Create Quiz
+    </a>
+{% endif %}
+
+{% endblock %}

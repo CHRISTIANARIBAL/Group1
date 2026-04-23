@@ -1,0 +1,153 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold text-primary mb-6">
+    Create / Edit Quiz 🧠
+</h1>
+
+<form method="POST" class="space-y-6">
+{% csrf_token %}
+
+<!-- QUIZ TITLE -->
+<input type="text" name="title"
+       value="{{ activity.title|default:'' }}"
+       placeholder="Quiz Title"
+       class="w-full p-3 bg-gray-800 rounded">
+
+<!-- QUESTIONS -->
+<div id="questions">
+
+{% if activity %}
+    {% for q in activity.question_set.all %}
+        <div class="bg-gray-800 p-4 rounded-lg mt-4 question-box">
+
+            <!-- Question + Delete -->
+            <div class="flex justify-between items-center mb-3">
+                <input type="text" name="question[]"
+                       value="{{ q.text }}"
+                       class="w-full p-2 bg-gray-700 rounded mr-2">
+
+                <button type="button" onclick="deleteQuestion(this)"
+                    class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">
+                    🗑
+                </button>
+            </div>
+
+            <!-- Choices -->
+            <div id="choices-{{ forloop.counter0 }}">
+
+                {% for c in q.choice_set.all %}
+                    <div class="flex items-center gap-2 mt-2">
+
+                        <input type="radio"
+                               name="correct_{{ forloop.parentloop.counter0 }}"
+                               value="{{ forloop.counter0 }}"
+                               {% if c.is_correct %}checked{% endif %}>
+
+                        <input type="text"
+                               name="choice_{{ forloop.parentloop.counter0 }}[]"
+                               value="{{ c.text }}"
+                               class="flex-1 p-2 bg-gray-700 rounded">
+
+                    </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- Add Choice -->
+            <button type="button"
+                onclick="addChoice({{ forloop.counter0 }})"
+                class="bg-blue-500 px-3 py-1 rounded mt-2">
+                + Choice
+            </button>
+
+        </div>
+    {% endfor %}
+{% endif %}
+
+</div>
+
+<!-- ADD QUESTION -->
+<button type="button" onclick="addQuestion()"
+    class="bg-green-500 px-4 py-2 rounded">
+    ➕ Add Question
+</button>
+
+<!-- SAVE -->
+<div>
+    <button class="bg-primary px-6 py-3 rounded-lg">
+        Save Quiz
+    </button>
+</div>
+
+</form>
+
+<!-- JS -->
+<script>
+let qIndex = {{ activity.question_set.count|default:0 }};
+
+function addQuestion() {
+    const container = document.getElementById('questions');
+
+    const qHTML = `
+    <div class="bg-gray-800 p-4 rounded-lg mt-4 question-box">
+        
+        <div class="flex justify-between items-center mb-2">
+            <input type="text" name="question[]" placeholder="Question"
+                class="w-full p-2 bg-gray-700 rounded mr-2">
+
+            <button type="button" onclick="deleteQuestion(this)"
+                class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">
+                🗑
+            </button>
+        </div>
+
+        <div id="choices-${qIndex}"></div>
+
+        <button type="button" onclick="addChoice(${qIndex})"
+            class="bg-blue-500 px-3 py-1 rounded mt-2">
+            + Choice
+        </button>
+    </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', qHTML);
+
+    addChoice(qIndex);
+    addChoice(qIndex);
+
+    qIndex++;
+}
+
+function addChoice(q) {
+    const container = document.getElementById(`choices-${q}`);
+
+    const count = container.children.length;
+
+    const cHTML = `
+    <div class="flex items-center gap-2 mt-2">
+        <input type="radio" name="correct_${q}" value="${count}">
+        <input type="text" name="choice_${q}[]" placeholder="Choice"
+            class="flex-1 p-2 bg-gray-700 rounded">
+    </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', cHTML);
+}
+function deleteQuestion(btn) {
+    const questionBox = btn.closest('.question-box');
+    questionBox.remove();
+}
+
+function deleteChoice(btn) {
+    btn.parentElement.remove();
+}
+
+// 👉 only auto-add if NO existing quiz
+{% if not activity %}
+    addQuestion();
+{% endif %}
+</script>
+
+{% endblock %}

@@ -37,6 +37,11 @@
                 <span class="text-sm">Next</span>
                 <span class="text-xl">→</span>
             </a>
+        {% else %}
+    <a href="{% url 'activity' lesson.course.id %}"
+       class="bg-yellow-500 px-6 py-3 rounded-lg">
+        Take Quiz 🧠
+    </a>
         {% endif %}
     </div>
 

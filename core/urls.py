@@ -28,4 +28,10 @@ urlpatterns = [
     path('dashboard/content/add/<int:lesson_id>/', views.admin_add_content, name='admin_add_content'),
 
     path('dashboard/users/', views.admin_users, name='admin_users'),
+
+    path('activity/<int:course_id>/', views.activity_view, name='activity'),
+    path('dashboard/quizzes/', views.admin_quizzes, name='admin_quizzes'),
+    path('dashboard/quizzes/edit/<int:course_id>/', views.admin_edit_quiz, name='admin_edit_quiz'),
+    path('dashboard/quizzes/<int:course_id>/', views.admin_course_quiz, name='admin_course_quiz'),
+    path('dashboard/quizzes/builder/<int:course_id>/', views.admin_quiz_builder, name='admin_quiz_builder'),
 ]

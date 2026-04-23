@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center mt-20">
+
+    <h1 class="text-3xl font-bold mb-4">
+        Your Score 🎯
+    </h1>
+
+    <p class="text-xl">
+        {{ score }} / {{ total }}
+    </p>
+
+    <a href="{% url 'lessons' %}"
+       class="mt-6 inline-block bg-primary px-6 py-3 rounded-lg">
+        Back to Courses
+    </a>
+
+</div>
+
+{% endblock %}
