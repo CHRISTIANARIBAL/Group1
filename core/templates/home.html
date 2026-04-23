@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="text-center mt-20 relative">
+
+    <!-- Glow Background -->
+    <div class="absolute inset-0 flex justify-center">
+        <div class="w-72 h-72 bg-primary opacity-20 blur-3xl rounded-full"></div>
+    </div>
+
+    <div class="relative z-10">
+
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
+            Welcome to <span class="text-primary">EduFlow</span>
+        </h1>
+
+        <p class="text-gray-400 mb-8 text-lg">
+            Your Visual Learning Journey starts here 🚀
+        </p>
+
+        {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}"
+               class="bg-primary px-8 py-3 rounded-xl font-semibold hover:bg-indigo-500 transition shadow-lg hover:shadow-primary/40">
+                Get Started
+            </a>
+        {% else %}
+            <a href="{% url 'lessons' %}"
+               class="bg-green-500 px-8 py-3 rounded-xl font-semibold hover:bg-green-600 transition shadow-lg hover:shadow-green-500/30">
+                Explore Lessons
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- Features Section -->
+<div class="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+
+    <!-- Feature 1 -->
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-md hover:scale-105 transition">
+        <h3 class="text-lg font-semibold mb-2 text-primary">📚 Structured Learning</h3>
+        <p class="text-gray-400 text-sm">
+            Follow step-by-step lessons designed for clarity and progression.
+        </p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-md hover:scale-105 transition">
+        <h3 class="text-lg font-semibold mb-2 text-primary">🖼 Visual Content</h3>
+        <p class="text-gray-400 text-sm">
+            Learn faster with images and interactive content in every lesson.
+        </p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-md hover:scale-105 transition">
+        <h3 class="text-lg font-semibold mb-2 text-primary">⚡ Smooth Experience</h3>
+        <p class="text-gray-400 text-sm">
+            Navigate easily with a clean and modern interface.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

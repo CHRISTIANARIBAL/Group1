@@ -1,0 +1,48 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-6 text-primary">
+    Admin Dashboard 🚀
+</h1>
+
+<!-- STATS CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h2 class="text-gray-400 text-sm">Total Courses</h2>
+        <p class="text-3xl font-bold mt-2">{{ course_count }}</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h2 class="text-gray-400 text-sm">Total Lessons</h2>
+        <p class="text-3xl font-bold mt-2">{{ lesson_count }}</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+        <h2 class="text-gray-400 text-sm">Contents</h2>
+        <p class="text-3xl font-bold mt-2">{{ content_count }}</p>
+    </div>
+
+</div>
+
+<!-- QUICK ACTIONS -->
+<h2 class="text-xl font-semibold mb-4 text-white">
+    Quick Actions ⚡
+</h2>
+
+<div class="flex flex-wrap gap-4">
+
+    <a href="{% url 'admin_courses' %}"
+       class="bg-primary px-6 py-3 rounded-lg hover:bg-indigo-500 transition shadow-md">
+        ➕ Manage Courses
+    </a>
+
+    <a href="{% url 'admin_lessons' %}"
+       class="bg-green-500 px-6 py-3 rounded-lg hover:bg-green-600 transition shadow-md">
+        📖 Manage Lessons
+    </a>
+
+</div>
+
+{% endblock %}

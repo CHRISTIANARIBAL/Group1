@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduFlow</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#6366f1',
+                },
+                fontFamily: {
+                    sans: ['Poppins', 'sans-serif'],
+                }
+            }
+        }
+    }
+</script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+<nav class="bg-gray-800 p-4 shadow-md flex justify-between items-center">
+
+    <h1 class="text-xl font-bold text-primary"><a href="{% url 'home' %}">EduFlow</a></h1>
+
+    <div class="flex items-center gap-4">
+
+        {% if user.is_authenticated %}
+            <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">
+    Welcome 👋 {{ user.username }}
+</span>
+
+            <a href="{% url 'logout' %}"
+               class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm">
+               Logout
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}"
+               class="bg-primary hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm">
+               Login
+            </a>
+        {% endif %}
+
+    </div>
+
+</nav>
+
+    <div class="p-6 flex-grow">
+        {% block content %}{% endblock %}
+    </div>
+<footer class="bg-gray-800 text-gray-400 mt-10">
+
+    <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="text-primary font-bold">EduFlow</span>
+        <!-- Left -->
+        <div class="text-sm">
+            © 2026 EduFlow. All rights reserved.
+        </div>
+
+         <div class="text-sm">
+            Powered by: Group Members unya na ni haha
+        </div>
+
+        <!-- Center -->
+        <div class="text-sm">
+            Developed by: Group 1
+        </div>
+
+        <!-- Right -->
+        <div class="flex gap-4 text-sm">
+            <a href="#" class="hover:text-white transition">About</a>
+            <a href="#" class="hover:text-white transition">Contact</a>
+            <a href="#" class="hover:text-white transition">Privacy</a>
+        </div>
+
+    </div>
+
+</footer>
+</body>
+</html>

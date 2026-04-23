@@ -1,0 +1,32 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold text-primary mb-6">
+    Add Content to {{ lesson.title }}
+</h1>
+
+<form method="POST" enctype="multipart/form-data"
+      class="bg-gray-800 p-6 rounded-xl space-y-4">
+
+    {% csrf_token %}
+
+    <input type="text" name="title" placeholder="Title (optional)"
+           class="w-full p-3 bg-gray-700 text-white rounded-lg">
+
+    <textarea name="text" placeholder="Text content..."
+              class="w-full p-3 bg-gray-700 text-white rounded-lg"></textarea>
+
+    <input type="file" name="image"
+           class="w-full text-white">
+
+    <input type="number" name="order" placeholder="Order"
+           class="w-full p-3 bg-gray-700 text-white rounded-lg">
+
+    <button class="bg-primary px-6 py-2 rounded-lg">
+        Save
+    </button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold text-primary mb-6">
+    {{ course.title }} - Lessons 📖
+</h1>
+
+<a href="{% url 'admin_add_lesson' course.id %}"
+   class="bg-green-500 px-4 py-2 rounded-lg mb-6 inline-block hover:bg-green-600">
+   ➕ Add Lesson
+</a>
+
+<div class="space-y-4">
+
+    {% for lesson in lessons %}
+        <div class="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
+
+            <div>
+                <h2 class="font-semibold">
+                    {{ lesson.title }}
+                </h2>
+                <p class="text-sm text-gray-400">
+                    Order: {{ lesson.order }}
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+
+                <a href="{% url 'admin_edit_lesson' lesson.id %}"
+                   class="bg-primary px-3 py-1 rounded hover:bg-indigo-500">
+                    Edit
+                </a>
+
+                <a href="{% url 'admin_delete_lesson' lesson.id %}"
+                   class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">
+                    Delete
+                </a>
+
+            </div>
+
+        </div>
+    {% empty %}
+        <p class="text-gray-400">No lessons yet.</p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

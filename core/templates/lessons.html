@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-6 text-primary">
+    Explore Lessons 📚
+</h1>
+
+<div class="grid md:grid-cols-3 gap-6">
+
+    {% for course in courses %}
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg hover:scale-105 transition">
+
+        <h2 class="text-xl font-semibold mb-2">
+            {{ course.title }}
+        </h2>
+
+        <p class="text-gray-400 mb-4">
+            {{ course.description }}
+        </p>
+
+        <a href="{% url 'course' course.id %}"
+           class="bg-primary px-4 py-2 rounded-lg text-sm hover:bg-indigo-500">
+            Start Learning
+        </a>
+
+    </div>
+    {% empty %}
+    <p class="text-gray-400">
+        No courses available yet.
+    </p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - EduFlow</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 p-6 hidden md:block">
+
+        <h1 class="text-xl font-bold text-primary mb-10">
+            Admin Panel
+        </h1>
+
+    <nav class="space-y-2">
+
+        <a href="{% url 'admin_dashboard' %}"
+        class="block px-4 py-2 rounded-lg
+        {% if request.resolver_match.url_name == 'admin_dashboard' %}
+            bg-primary text-white
+        {% else %}
+            text-gray-300 hover:text-primary
+        {% endif %}">
+            📊 Dashboard
+        </a>
+
+        <a href="{% url 'admin_courses' %}"
+        class="block px-4 py-2 rounded-lg
+        {% if request.resolver_match.url_name in 'admin_courses admin_add_course admin_edit_course admin_delete_course' %}
+            bg-primary text-white
+        {% else %}
+            text-gray-300 hover:text-primary
+        {% endif %}">
+            📚 Courses
+        </a>
+
+        <a href="{% url 'admin_lessons' %}"
+        class="block px-4 py-2 rounded-lg
+        {% if request.resolver_match.url_name == 'admin_lessons' %}
+            bg-primary text-white
+        {% else %}
+            text-gray-300 hover:text-primary
+        {% endif %}">
+            📖 Lessons
+        </a>
+
+        <!-- <a href="{% url 'admin_users' %}"
+        class="block px-4 py-2 rounded-lg
+        {% if request.resolver_match.url_name == 'admin_users' %}
+            bg-primary text-white
+        {% else %}
+            text-gray-300 hover:text-primary
+        {% endif %}">
+            👤 Users
+        </a> -->
+
+    </nav>
+
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Top Bar -->
+        <header class="bg-gray-800 p-4 flex justify-between items-center shadow-md">
+
+            <h2 class="text-lg font-semibold">
+                Admin Panel
+            </h2>
+
+            <div class="flex items-center gap-4">
+
+                <a href="{% url 'home' %}"
+                   class="text-sm text-gray-400 hover:text-white">
+                    🏠 Home
+                </a>
+
+                <a href="{% url 'logout' %}"
+                   class="bg-red-500 px-4 py-2 rounded-lg text-sm hover:bg-red-600">
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-6 flex-1">
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-2xl font-bold text-primary mb-6">
+    Manage Lesson
+</h1>
+
+<form method="POST" class="bg-gray-800 p-6 rounded-xl space-y-5 shadow-lg">
+    {% csrf_token %}
+
+    <!-- Course -->
+<!-- Course -->
+{% if course_id %}
+    <!-- READ ONLY COURSE -->
+    <div>
+        <label class="block text-gray-400 mb-1">Course</label>
+
+        <div class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+            📚 {{ course_obj.title }}
+        </div>
+
+        <!-- Hidden value -->
+        <input type="hidden" name="course" value="{{ course_id }}">
+    </div>
+
+{% else %}
+    <!-- NORMAL DROPDOWN -->
+    <div>
+        <label class="block text-gray-400 mb-1">Course</label>
+        <select name="course"
+            class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-primary">
+            
+            {% for c in form.course.field.queryset %}
+                <option value="{{ c.id }}"
+                {% if form.course.value|stringformat:"s" == c.id|stringformat:"s" %}
+                    selected
+                {% endif %}
+                >
+                    {{ c.title }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+
+    <!-- Title -->
+    <div>
+        <label class="block text-gray-400 mb-1">Lesson Title</label>
+        <input type="text" name="title" value="{{ form.title.value|default:'' }}"
+               class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-primary">
+    </div>
+
+    <!-- Order -->
+    <div>
+        <label class="block text-gray-400 mb-1">Order (Flow Position)</label>
+        <input type="number" name="order" value="{{ form.order.value|default:'' }}"
+               class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-primary">
+    </div>
+
+{% if lesson %}
+    <hr class="border-gray-700 my-6">
+
+<h2 class="text-xl font-semibold mb-4 text-primary">
+    Lesson Contents 🧩
+</h2>
+
+<a href="{% url 'admin_add_content' lesson.id %}"
+   class="bg-green-500 px-4 py-2 rounded-lg mb-4 inline-block hover:bg-green-600">
+   ➕ Add Content
+</a>
+
+<div class="space-y-4">
+
+    {% for content in contents %}
+        <div class="bg-gray-700 p-4 rounded-lg">
+
+            {% if content.title %}
+                <h3 class="font-bold text-white mb-2">
+                    {{ content.title }}
+                </h3>
+            {% endif %}
+
+            {% if content.text %}
+                <p class="text-gray-300 mb-2">
+                    {{ content.text|truncatewords:20 }}
+                </p>
+            {% endif %}
+
+            {% if content.image %}
+                <img src="{{ content.image.url }}"
+                     class="w-32 h-20 object-cover rounded mb-2">
+            {% endif %}
+
+            <p class="text-xs text-gray-400">
+                Order: {{ content.order }}
+            </p>
+
+        </div>
+    {% empty %}
+        <p class="text-gray-400">No content yet.</p>
+    {% endfor %}
+
+</div>
+{% else %}
+
+    <!-- 👇 OPTIONAL UX MESSAGE -->
+    <p class="text-gray-400 mt-6">
+        💡 Save the lesson first to add contents
+    </p>
+
+    {% endif %}
+
+    <!-- {% if not lesson %}
+<p class="text-gray-400 mt-6">
+    💡 Save the lesson first to add contents
+</p>
+{% endif %} -->
+
+    <!-- Buttons -->
+    <div class="flex justify-between items-center pt-4">
+
+        <a href="{% url 'admin_lessons' %}"
+           class="text-gray-400 hover:text-white transition">
+            ← Back
+        </a>
+
+        <button type="submit"
+            class="bg-primary px-6 py-2 rounded-lg font-semibold hover:bg-indigo-500 transition shadow-md hover:shadow-indigo-500/30">
+            Save
+        </button>
+
+    </div>
+
+</form>
+
+{% endblock %}

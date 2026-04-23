@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+
+    <!-- LEFT: Back -->
+    <div>
+        {% if prev_lesson %}
+            <a href="{% url 'lesson_detail' prev_lesson.id %}"
+               class="flex items-center gap-2 text-gray-400 hover:text-white transition">
+                <span class="text-xl">←</span>
+                <span class="text-sm">Back</span>
+            </a>
+        {% else %}
+            <button onclick="history.back()"
+                class="flex items-center gap-2 text-gray-400 hover:text-white transition">
+                <span class="text-xl">←</span>
+                <span class="text-sm">Back</span>
+            </button>
+        {% endif %}
+    </div>
+
+    <!-- CENTER: Back to Course -->
+    <div>
+        <a href="{% url 'lessons' %}"
+           class="text-sm bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+            📚 Lessons
+        </a>
+    </div>
+
+    <!-- RIGHT: Next -->
+    <div>
+        {% if next_lesson %}
+            <a href="{% url 'lesson_detail' next_lesson.id %}"
+               class="flex items-center gap-2 text-gray-400 hover:text-white transition">
+                <span class="text-sm">Next</span>
+                <span class="text-xl">→</span>
+            </a>
+        {% endif %}
+    </div>
+
+</div>
+<h1 class="text-2xl font-bold mb-6 text-primary">
+    {{ lesson.title }}
+</h1>
+
+<div class="space-y-6 pb-24">
+
+    {% for content in contents %}
+        <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+
+            <!-- ✅ Title (only shows if exists) -->
+            {% if content.title %}
+                <h2 class="text-lg font-bold text-white border-l-4 border-primary pl-3 mb-3">
+                    
+                    {{ content.title }}
+                </h2>
+            {% endif %}
+
+            {% if content.image %}
+                <div class="flex flex-col md:flex-row gap-6 items-start">
+
+                    <!-- Text -->
+                    <div class="flex-1">
+                        {% if content.text %}
+                            <p class="text-gray-300 leading-relaxed">
+                                {{ content.text }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Image -->
+                    <div class="w-full md:w-1/3">
+                        <img src="{{ content.image.url }}"
+                             onclick="openModal(this.src)"
+                             class="rounded-lg w-full max-h-64 object-cover shadow-md hover:scale-105 transition cursor-pointer">
+                    </div>
+
+                </div>
+
+            {% else %}
+                {% if content.text %}
+                    <p class="text-gray-300 leading-relaxed">
+                        {{ content.text }}
+                    </p>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</div>
+
+<div class="fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 p-4 flex justify-between items-center z-40">
+    <!-- Previous -->
+    {% if prev_lesson %}
+        <a href="{% url 'lesson_detail' prev_lesson.id %}"
+           class="bg-gray-600 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
+            ← Previous
+        </a>
+    {% else %}
+        <a href="{% url 'course' lesson.course.id %}"
+           class="bg-gray-600 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
+            Back to Course
+        </a>
+    {% endif %}
+
+    <!-- Next -->
+    {% if next_lesson %}
+        <a href="{% url 'lesson_detail' next_lesson.id %}"
+           class="bg-primary px-6 py-3 rounded-lg hover:bg-indigo-500 transition">
+            Next →
+        </a>
+    {% else %}
+        <span class=" px-6 py-3 rounded-lg">
+            Thanks for Visiting Hope you Learned from our website thank you!!!
+        </span>
+    {% endif %}
+
+</div>
+
+<!-- Image Modal -->
+<!-- Image Modal -->
+<div id="imageModal" onclick="closeModal()" 
+     class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50 flex-col">
+
+    <!-- Controls -->
+    <div class="absolute top-5 right-8 flex gap-3 text-white text-xl">
+
+        <button onclick="resetZoom(event)" class="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">Reset</button>
+        <button onclick="closeModal()" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">✖</button>
+
+    </div>
+
+    <!-- Image -->
+    <img id="modalImage" 
+         class="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg transition-transform duration-200 cursor-grab"
+         onclick="event.stopPropagation()">
+
+</div>
+
+<script>
+let scale = 1;
+let isDragging = false;
+let startX, startY;
+let translateX = 0, translateY = 0;
+
+function openModal(src) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+
+    modalImg.src = src;
+
+    // Reset values
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+
+    updateTransform();
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+}
+
+function zoomIn(e) {
+    e.stopPropagation();
+    scale += 0.2;
+    updateTransform();
+}
+
+function zoomOut(e) {
+    e.stopPropagation();
+    scale = Math.max(0.5, scale - 0.2);
+    updateTransform();
+}
+
+function resetZoom(e) {
+    e.stopPropagation();
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    updateTransform();
+}
+
+function updateTransform() {
+    const modalImg = document.getElementById('modalImage');
+    modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+/* ===== DRAG LOGIC ===== */
+
+const modalImg = document.getElementById('modalImage');
+
+modalImg.addEventListener('mousedown', (e) => {
+    if (scale <= 1) return;
+
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+
+    modalImg.classList.remove('cursor-grab');
+    modalImg.classList.add('cursor-grabbing');
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    translateX += dx;
+    translateY += dy;
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    updateTransform();
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    modalImg.classList.remove('cursor-grabbing');
+    modalImg.classList.add('cursor-grab');
+});
+
+/* ===== SCROLL ZOOM ===== */
+
+document.getElementById('imageModal').addEventListener('wheel', function(e) {
+    e.preventDefault();
+
+    const rect = modalImg.getBoundingClientRect();
+
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    const zoomFactor = 0.1;
+    const prevScale = scale;
+
+    if (e.deltaY < 0) {
+        scale += zoomFactor;
+    } else {
+        scale = Math.max(0.5, scale - zoomFactor);
+    }
+
+    const scaleRatio = scale / prevScale;
+
+    // Adjust position so zoom follows cursor
+    translateX -= (offsetX - rect.width / 2) * (scaleRatio - 1);
+    translateY -= (offsetY - rect.height / 2) * (scaleRatio - 1);
+
+    updateTransform();
+});
+
+
+</script>
+
+{% endblock %}
