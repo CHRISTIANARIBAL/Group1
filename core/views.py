@@ -300,30 +300,34 @@ def activity_view(request, course_id):
     activity = Activity.objects.filter(course_id=course_id).first()
 
     if not activity:
-        return render(request, 'admin/no_quiz.html')
+        return render(request, 'no_quiz.html')
 
     questions = Question.objects.filter(activity=activity)
 
     if request.method == 'POST':
         score = 0
+        user_answers = {}
 
         for question in questions:
-            selected = request.POST.get(f"question_{question.id}")
+            selected = request.POST.get(str(question.id))
 
             if not selected:
                 continue
 
-            correct = question.choice_set.filter(is_correct=True).first()
-
-            if not correct:
+            try:
+                choice = Choice.objects.get(id=selected)
+                user_answers[question.id] = choice.id
+            except Choice.DoesNotExist:
                 continue
 
-            if selected == str(correct.id):
+            if choice.is_correct:
                 score += 1
 
         return render(request, 'activity_result.html', {
             'score': score,
-            'total': questions.count()
+            'total': questions.count(),
+            'questions': questions,
+            'user_answers': user_answers
         })
 
     return render(request, 'activity.html', {

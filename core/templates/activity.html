@@ -25,9 +25,9 @@
                     {% for choice in question.choice_set.all %}
                         <label class="flex items-center gap-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 cursor-pointer">
                             <input type="radio"
-                                   name="question_{{ question.id }}"
-                                   value="{{ choice.id }}"
-                                   class="accent-indigo-500">
+                                name="{{ question.id }}"
+                                value="{{ choice.id }}"
+                                class="accent-indigo-500">
 
                             <span>{{ choice.text }}</span>
                         </label>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_tags %}
 
 {% block content %}
 
@@ -12,11 +13,84 @@
         {{ score }} / {{ total }}
     </p>
 
-    <a href="{% url 'lessons' %}"
-       class="mt-6 inline-block bg-primary px-6 py-3 rounded-lg">
-        Back to Courses
-    </a>
+    <!-- REVIEW BUTTON -->
+    <button onclick="toggleReview()"
+        class="mt-4 bg-blue-500 px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+        📄 Review Answers
+    </button>
+
+    <!-- BACK -->
+    <div>
+        <a href="{% url 'lessons' %}"
+           class="mt-6 inline-block bg-primary px-6 py-3 rounded-lg">
+            Back to Subjects
+        </a>
+    </div>
 
 </div>
+
+<!-- REVIEW SECTION -->
+<div id="reviewSection" class="hidden mt-10 max-w-3xl mx-auto space-y-6">
+
+    {% for question in questions %}
+        {% with user_answers|get_item:question.id as selected_id %}
+        {% with question.choice_set.all|get_correct_choice as correct_choice %}
+
+        <!-- QUESTION BOX -->
+        <div class="bg-gray-800 p-5 rounded-lg shadow">
+
+            <!-- QUESTION TEXT -->
+            <p class="font-semibold mb-4
+                {% if selected_id and selected_id != correct_choice.id %}
+                    text-red-400
+                {% else %}
+                    text-white
+                {% endif %}
+            ">
+                {{ forloop.counter }}. {{ question.text }}
+            </p>
+
+            <!-- CHOICES -->
+            {% for choice in question.choice_set.all %}
+
+                <!-- USER WRONG -->
+                {% if choice.id == selected_id and not choice.is_correct %}
+                    <div class="p-2 rounded mb-2 bg-red-500 text-white flex justify-between">
+                        {{ choice.text }}
+                        <span>✖</span>
+                    </div>
+
+                <!-- CORRECT ANSWER -->
+                {% elif choice.is_correct %}
+                    <div class="p-2 rounded mb-2 bg-green-500 text-white flex justify-between">
+                        {{ choice.text }}
+                        <span>✔</span>
+                    </div>
+
+                <!-- NORMAL -->
+                {% else %}
+                    <div class="p-2 rounded mb-2 bg-gray-700">
+                        {{ choice.text }}
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+        {% endwith %}
+        {% endwith %}
+    {% endfor %}
+
+</div>
+
+<!-- JS -->
+<script>
+function toggleReview() {
+    const section = document.getElementById('reviewSection');
+    section.classList.toggle('hidden');
+}
+</script>
 
 {% endblock %}
