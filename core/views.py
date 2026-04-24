@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Course, Lesson, Progress, LessonContent
+from .models import *
 from .forms import CourseForm, LessonForm
 
 def home(request):
@@ -294,4 +294,155 @@ def admin_course_lessons(request, course_id):
     return render(request, 'admin/course_lessons.html', {
         'course': course,
         'lessons': lessons
+    })
+
+def activity_view(request, course_id):
+    activity = Activity.objects.filter(course_id=course_id).first()
+
+    if not activity:
+        return render(request, 'admin/no_quiz.html')
+
+    questions = Question.objects.filter(activity=activity)
+
+    if request.method == 'POST':
+        score = 0
+
+        for question in questions:
+            selected = request.POST.get(f"question_{question.id}")
+
+            if not selected:
+                continue
+
+            correct = question.choice_set.filter(is_correct=True).first()
+
+            if not correct:
+                continue
+
+            if selected == str(correct.id):
+                score += 1
+
+        return render(request, 'activity_result.html', {
+            'score': score,
+            'total': questions.count()
+        })
+
+    return render(request, 'activity.html', {
+        'activity': activity,
+        'questions': questions
+    })
+
+@user_passes_test(is_admin)
+def admin_quizzes(request):
+    courses = Course.objects.all()
+    return render(request, 'admin/quizzes.html', {'courses': courses})
+
+@user_passes_test(is_admin)
+def admin_course_quiz(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    quiz = Activity.objects.filter(course=course).first()
+
+    return render(request, 'admin/course_quiz.html', {
+        'course': course,
+        'quiz': quiz
+    })
+
+@user_passes_test(is_admin)
+def admin_quiz_builder(request, course_id):
+
+    activity = Activity.objects.filter(course_id=course_id).first()
+
+    if request.method == "POST":
+        print("POST:", request.POST)
+        title = request.POST.get("title")
+
+        Activity.objects.filter(course_id=course_id).delete()
+
+        # ✅ CREATE ACTIVITY
+        activity = Activity.objects.create(
+            course_id=course_id,
+            title=title
+        )
+
+        # ✅ LOOP QUESTIONS
+        questions = request.POST.getlist("question[]")
+
+        if not questions:
+            return redirect('admin_course_quiz', course_id=course_id)
+
+        for i, q_text in enumerate(questions):
+            if not q_text.strip():
+                continue
+
+            question = Question.objects.create(
+                activity=activity,
+                text=q_text
+            )
+
+            # ✅ GET CHOICES FOR THIS QUESTION
+            choices = request.POST.getlist(f"choice_{i}[]")
+            correct = request.POST.get(f"correct_{i}")
+
+            for j, c_text in enumerate(choices):
+                if not c_text.strip():
+                    continue
+
+                Choice.objects.create(
+                    question=question,
+                    text=c_text,
+                    is_correct=(str(j) == correct)
+                )
+
+        return redirect('admin_course_quiz', course_id=course_id)
+
+    return render(request, 'admin/quiz_builder.html', {
+        'course_id': course_id,
+        'activity': activity
+    })
+
+@user_passes_test(is_admin)
+def admin_edit_quiz(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    quiz = get_object_or_404(Activity, course=course)
+
+    if request.method == 'POST':
+        quiz.title = request.POST.get('title')
+        quiz.save()
+
+    questions = quiz.question_set.all()
+
+    return render(request, 'admin/edit_quiz.html', {
+        'quiz': quiz,
+        'course': course,
+        'questions': questions
+    })
+
+def admin_edit_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+
+    if request.method == 'POST':
+        question.text = request.POST.get('text')
+        question.save()
+
+        return redirect('admin_edit_quiz', course_id=question.activity.course.id)
+
+    return render(request, 'admin/edit_question.html', {'question': question})
+
+def admin_delete_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    course_id = question.activity.course.id
+    question.delete()
+
+    return redirect('admin_edit_quiz', course_id=course_id)
+
+def admin_delete_choice(request, choice_id):
+    choice = get_object_or_404(Choice, id=choice_id)
+    course_id = choice.question.activity.course.id
+    choice.delete()
+
+    return redirect('admin_edit_quiz', course_id=course_id)
+
+@user_passes_test(is_admin)
+def admin_add_quiz(request, course_id):
+    return render(request, 'admin/quiz_builder.html', {
+        'course_id': course_id
     })

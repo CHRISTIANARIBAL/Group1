@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<button onclick="history.back()"
+    class="fixed top-20 left-6 flex items-center gap-2 text-gray-400 hover:text-white transition">
+    <span class="text-2xl">←</span>
+    <span class="text-sm">Back</span>
+</button>
+
+<div class="text-center mt-20">
+    <h1 class="text-2xl text-gray-400">
+        No quiz available yet 😴
+    </h1>
+
+    <p class="text-gray-500 mt-2">
+        Please wait for the admin to add one.
+    </p>
+</div>
+
+{% endblock %}

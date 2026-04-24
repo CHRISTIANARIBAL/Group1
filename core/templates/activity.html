@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-10">
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-primary mb-8 text-center">
+        {{ activity.title }}
+    </h1>
+
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+
+        {% for question in activity.question_set.all %}
+            <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+
+                <!-- Question -->
+                <p class="font-semibold text-lg mb-4">
+                    {{ forloop.counter }}. {{ question.text }}
+                </p>
+
+                <!-- Choices -->
+                <div class="space-y-2">
+                    {% for choice in question.choice_set.all %}
+                        <label class="flex items-center gap-3 bg-gray-700 p-3 rounded-lg hover:bg-gray-600 cursor-pointer">
+                            <input type="radio"
+                                   name="question_{{ question.id }}"
+                                   value="{{ choice.id }}"
+                                   class="accent-indigo-500">
+
+                            <span>{{ choice.text }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+            </div>
+        {% endfor %}
+
+        <!-- Submit -->
+        <button class="w-full bg-primary py-3 rounded-lg font-semibold hover:bg-indigo-500 transition">
+            Submit Answers
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

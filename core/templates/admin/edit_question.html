@@ -1,0 +1,42 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<h1 class="text-xl font-bold mb-6 text-primary">
+    Edit Question
+</h1>
+
+<form method="POST" class="bg-gray-800 p-6 rounded-xl">
+    {% csrf_token %}
+
+    <textarea name="text"
+        class="w-full p-3 bg-gray-700 rounded mb-4">{{ question.text }}</textarea>
+
+    <button class="bg-primary px-6 py-2 rounded">
+        Save
+    </button>
+</form>
+
+<hr class="border-gray-700 my-6">
+
+<h2 class="text-lg font-semibold mb-3">Choices</h2>
+
+{% for c in question.choice_set.all %}
+    <div class="flex justify-between bg-gray-700 p-3 rounded mb-2">
+        <span class="{% if c.is_correct %}text-green-400{% endif %}">
+            {{ c.text }}
+        </span>
+
+        <a href="{% url 'admin_delete_choice' c.id %}"
+           class="text-red-400 text-sm">
+           Delete
+        </a>
+    </div>
+{% endfor %}
+
+<a href="{% url 'admin_add_choice' question.id %}"
+   class="bg-green-500 px-4 py-2 rounded mt-3 inline-block">
+   ➕ Add Choice
+</a>
+
+{% endblock %}
