@@ -5,7 +5,7 @@
 <div class="flex justify-between items-center mb-6">
 
     <!-- LEFT: Back -->
-    <div>
+    <!-- <div>
         {% if prev_lesson %}
             <a href="{% url 'lesson_detail' prev_lesson.id %}"
                class="flex items-center gap-2 text-gray-400 hover:text-white transition">
@@ -19,7 +19,7 @@
                 <span class="text-sm">Back</span>
             </button>
         {% endif %}
-    </div>
+    </div> -->
 
     <!-- CENTER: Back to Course -->
     <div>
@@ -34,8 +34,8 @@
         {% if next_lesson %}
             <a href="{% url 'lesson_detail' next_lesson.id %}"
                class="flex items-center gap-2 text-gray-400 hover:text-white transition">
-                <span class="text-sm">Next</span>
-                <span class="text-xl">→</span>
+                <!-- <span class="text-sm">Next</span>
+                <span class="text-xl">→</span> -->
             </a>
         {% else %}
     <a href="{% url 'activity' lesson.course.id %}"
@@ -97,33 +97,63 @@
 
 </div>
 
-<div class="fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 p-4 flex justify-between items-center z-40">
-    <!-- Previous -->
-    {% if prev_lesson %}
-        <a href="{% url 'lesson_detail' prev_lesson.id %}"
-           class="bg-gray-600 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
-            ← Previous
-        </a>
-    {% else %}
+<!-- <div class="fixed bottom-0 left-0 w-full bg-gray-800 border-t border-gray-700 py-2 px-4 flex justify-between items-center z-40">
         <a href="{% url 'course' lesson.course.id %}"
            class="bg-gray-600 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
             Back to Subjects
         </a>
-    {% endif %}
 
-    <!-- Next -->
-    {% if next_lesson %}
-        <a href="{% url 'lesson_detail' next_lesson.id %}"
-           class="bg-primary px-6 py-3 rounded-lg hover:bg-indigo-500 transition">
-            Next →
-        </a>
-    {% else %}
         <span class=" px-6 py-3 rounded-lg">
             Thanks for Visiting Hope you Learned from our website thank you!!!
         </span>
-    {% endif %}
+ 
+
+</div> -->
+
+<!-- <div class="max-w-3xl mx-auto mt-10 text-center">
+
+    <a href="{% url 'complete_lesson' lesson.id %}"
+       class="bg-green-500 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition">
+        ✅ Mark as Finished
+    </a>
+
+</div> -->
+
+<div class="max-w-3xl mx-auto mt-10 text-center">
+
+    <form action="{% url 'complete_lesson' lesson.id %}" method="POST">
+        {% csrf_token %}
+
+        <button type="submit"
+            class="bg-green-500 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition">
+            ✅ Finish Lesson
+        </button>
+    </form>
 
 </div>
+
+{% if not next_lesson %}
+<div class="max-w-3xl mx-auto mt-10 text-center">
+    
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+
+        <h2 class="text-xl font-semibold mb-3">
+            🎉 You’ve reached the end of this course!
+        </h2>
+
+        <p class="text-gray-400 mb-5">
+            Ready to test what you've learned?
+        </p>
+
+        <a href="{% url 'activity' lesson.course.id %}"
+           class="bg-yellow-500 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition">
+            🧠 Take Quiz
+        </a>
+
+    </div>
+
+</div>
+{% endif %}
 
 <!-- Image Modal -->
 <!-- Image Modal -->
@@ -144,6 +174,8 @@
          onclick="event.stopPropagation()">
 
 </div>
+
+
 
 <script>
 let scale = 1;

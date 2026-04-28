@@ -65,12 +65,21 @@ def course(request, course_id):
     lesson_data = []
     unlocked = True  # first lesson is always unlocked
 
-    for lesson in lessons:
-        if lesson.id in completed_lessons:
+
+    for index, lesson in enumerate(lessons):
+        is_completed = lesson.id in completed_lessons
+
+        # FIRST lesson always unlocked
+        if index == 0:
+            is_unlocked = True
+        else:
+            prev_lesson = lessons[index - 1]
+            is_unlocked = prev_lesson.id in completed_lessons
+
+        if is_completed:
             status = 'completed'
-        elif unlocked:
+        elif is_unlocked:
             status = 'current'
-            unlocked = False
         else:
             status = 'locked'
 
@@ -79,9 +88,20 @@ def course(request, course_id):
             'status': status
         })
 
+    total_count = lessons.count()
+    completed_count = len(completed_lessons)
+    all_completed = completed_count == total_count
+
+    percent = int((completed_count / total_count) * 100) if total_count > 0 else 0
+
     return render(request, 'course.html', {
         'course': course,
-        'lesson_data': lesson_data
+        'lesson_data': lesson_data,
+        'completed_count': completed_count,  # 👈 add
+        'total_count': total_count,          # 👈 add
+        'percent': percent ,
+        'all_done': completed_count == total_count,
+        'all_completed': all_completed
     })
 
 @login_required
@@ -322,6 +342,16 @@ def activity_view(request, course_id):
 
             if choice.is_correct:
                 score += 1
+
+        # ✅ PASSING LOGIC (you can adjust threshold)
+        # if score >= questions.count() * 0.5:  # 50% pass
+        #     last_lesson = Lesson.objects.filter(course_id=course_id).order_by('-order').first()
+
+        #     Progress.objects.update_or_create(
+        #         user=request.user,
+        #         lesson=last_lesson,
+        #         defaults={'completed': True}
+        #     )
 
         return render(request, 'activity_result.html', {
             'score': score,

@@ -3,33 +3,43 @@
 {% block content %}
 
 <!-- 🔝 Top Navigation -->
-<div class="flex justify-between items-center mb-8">
+<!-- 🔝 Top Navigation -->
+<div class="flex justify-between items-center mb-4">
 
     <!-- Back -->
-    <button onclick="history.back()"
-        class="flex items-center gap-2 text-gray-400 hover:text-white transition">
-        <span class="text-xl">←</span>
-        <span class="text-sm hidden sm:inline">Back</span>
-    </button>
+    <div class="">
+        <h2 class="text-2xl font-bold text-primary flex items-center gap-2">
+            📚 Lessons
+        </h2>
+    
+    </div>
 
     <!-- Course Shortcut -->
     <a href="{% url 'lessons' %}"
        class="text-sm bg-gray-700 px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-        📚 All Subjects
+       🛤️ Choose Path
     </a>
 
     <!-- Next -->
+    <!-- Next -->
     {% if next_lesson %}
         <a href="{% url 'lesson_detail' next_lesson.id %}"
-           class="flex items-center gap-2 text-gray-400 hover:text-white transition">
-            <span class="text-sm hidden sm:inline">Next</span>
-            <span class="text-xl">→</span>
+           class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition">
+            →
         </a>
     {% else %}
         <div></div>
     {% endif %}
 
 </div>
+
+<!-- 📚 PAGE LABEL (LIKE "CHOOSE PATH") -->
+<!-- <div class="mb-6">
+    <h2 class="text-2xl font-bold text-primary flex items-center gap-2">
+        📚 Lessons
+    </h2>
+
+</div> -->
 
 <!-- 🌟 Title Section -->
 <div class="text-center mb-12 relative">
@@ -45,25 +55,117 @@
 
 </div>
 
+<!-- 📊 PROGRESS CARD -->
+<div class="max-w-3xl mx-auto mb-10">
+
+    <div class="bg-gray-800 p-5 rounded-2xl shadow-md">
+
+        <!-- Text -->
+        <div class="flex justify-between text-sm text-gray-400 mb-2">
+            <span>Course Progress</span>
+            <span>{{ completed_count }} / {{ total_count }}</span>
+        </div>
+
+        <!-- Bar -->
+        <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="bg-primary h-3 rounded-full transition-all duration-500"
+                 style="width: {{ percent }}%;">
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 🔁 RESET BUTTON -->
+{% if completed_count > 0 %}
+<div class="max-w-3xl mx-auto mb-10 text-right">
+
+    <a href="{% url 'reset_progress' course.id %}"
+       onclick="return confirm('Reset all progress?')"
+       class="bg-red-500 px-5 py-2 rounded-lg text-sm hover:bg-red-600 transition">
+        🔄 Reset Progress
+    </a>
+
+</div>
+{% endif %}
+
 <!-- 📦 Lesson Grid -->
 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
 
     {% for item in lesson_data %}
-        <a href="{% url 'lesson_detail' item.lesson.id %}">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-md hover:scale-105 hover:bg-gray-700 transition cursor-pointer group">
-
-                <h2 class="text-lg font-semibold mb-2 group-hover:text-primary transition">
+    
+        {% if item.status == 'locked' %}
+            <!-- 🔒 LOCKED (no link) -->
+            <div class="bg-gray-700 opacity-50 p-6 rounded-2xl shadow-md cursor-not-allowed">
+    
+                <h2 class="text-lg font-semibold mb-2">
                     {{ item.lesson.title }}
                 </h2>
-
+    
                 <p class="text-sm text-gray-400">
-                    Click to Learn this lesson →
+                    🔒 Locked
                 </p>
-
+    
             </div>
-        </a>
+        
+    
+        {% else %}
+            <!-- ✅ CLICKABLE -->
+            <a href="{% url 'lesson_detail' item.lesson.id %}">
+    
+                <div class="
+                    p-6 rounded-2xl shadow-md transition cursor-pointer group hover:scale-105
+    
+                    {% if item.status == 'completed' %}
+                        bg-green-600 hover:bg-green-500
+                    {% elif item.status == 'current' %}
+                        bg-primary hover:bg-indigo-500
+                    {% endif %}
+                ">
+    
+                    <h2 class="text-lg font-semibold mb-2 text-white">
+                        {{ item.lesson.title }}
+                    </h2>
+    
+                    <p class="text-sm text-white/80">
+                        {% if item.status == 'completed' %}
+                            ✅ Completed
+                        {% else %}
+                            ▶ Start Lesson
+                        {% endif %}
+                    </p>
+    
+                </div>
+    
+            </a>
+        {% endif %}
+    
     {% endfor %}
+    
+    </div>
+
+    {% if all_completed %}
+<div class="max-w-3xl mx-auto mt-10 text-center">
+
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+
+        <h2 class="text-xl font-semibold mb-3">
+            🎉 Course Completed!
+        </h2>
+
+        <p class="text-gray-400 mb-5">
+            You finished all lessons. Ready for the quiz?
+        </p>
+
+        <a href="{% url 'activity' course.id %}"
+           class="bg-yellow-500 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition">
+            🧠 Take Quiz
+        </a>
+
+    </div>
 
 </div>
+{% endif %}
 
 {% endblock %}

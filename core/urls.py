@@ -34,4 +34,6 @@ urlpatterns = [
     path('dashboard/quizzes/edit/<int:course_id>/', views.admin_edit_quiz, name='admin_edit_quiz'),
     path('dashboard/quizzes/<int:course_id>/', views.admin_course_quiz, name='admin_course_quiz'),
     path('dashboard/quizzes/builder/<int:course_id>/', views.admin_quiz_builder, name='admin_quiz_builder'),
+
+    path('reset/<int:course_id>/', views.reset_progress, name='reset_progress'),
 ]
